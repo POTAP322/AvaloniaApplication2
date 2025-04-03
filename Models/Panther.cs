@@ -7,12 +7,13 @@ namespace AvaloniaApplication2.Models
         public event EventHandler? SoundGiven;
         public event EventHandler? TreeClimbed;
         public event EventHandler? GetDownFromTree;
+        public bool IsOnTree { get; private set; }
 
         public Panther(int speedStep, int maxSpeed) : base(speedStep, maxSpeed) { }
 
         public override void Move()
         {
-            if (Speed < MaxSpeed)
+            if (Speed < MaxSpeed && IsOnTree == false)
             {
                 Speed += SpeedStep;
             }
@@ -33,12 +34,21 @@ namespace AvaloniaApplication2.Models
 
         public void ClimbTree()
         {
-            TreeClimbed?.Invoke(this, EventArgs.Empty);
+            if( IsOnTree == false){
+                Speed = 0;
+                TreeClimbed?.Invoke(this, EventArgs.Empty);
+                IsOnTree = true;
+            }
+            
         }
 
         public void GetDown()
         {
-            GetDownFromTree?.Invoke(this, EventArgs.Empty);
+            if(IsOnTree == true){
+                GetDownFromTree?.Invoke(this, EventArgs.Empty);
+                IsOnTree = false;
+            }
+            
         }
     }
 }

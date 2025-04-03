@@ -2,7 +2,7 @@ namespace AvaloniaApplication2.Models
 {
     public class Turtle : Creature
     {
-        public Turtle(int maxSpeed, int speedStep) : base(speedStep, maxSpeed) { }
+        public Turtle(int maxSpeed, int speedStep) : base(maxSpeed, speedStep) { }
 
         public override void Move()
         {

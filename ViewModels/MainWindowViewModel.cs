@@ -1,22 +1,27 @@
-﻿using AvaloniaApplication2.Models;
-using ReactiveUI;
-using System;
-using System.Windows.Input;
+﻿using System;
+using System.Collections.ObjectModel;
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
+using AvaloniaApplication2.Models;
 
 namespace AvaloniaApplication2.ViewModels
 {
-    public class MainWindowViewModel : ReactiveObject
+    public partial class MainWindowViewModel : ObservableObject
     {
         private readonly Dog _dog;
         private readonly Panther _panther;
         private readonly Turtle _turtle;
-        
-        private string _outputText = string.Empty;
-        public string OutputText
-        {
-            get => _outputText;
-            set => this.RaiseAndSetIfChanged(ref _outputText, value);
-        }
+
+        public ObservableCollection<string> Logs { get; } = new ObservableCollection<string>();
+
+        [ObservableProperty]
+        private int dogSpeed;
+
+        [ObservableProperty]
+        private int pantherSpeed;
+
+        [ObservableProperty]
+        private int turtleSpeed;
 
         public MainWindowViewModel()
         {
@@ -24,72 +29,81 @@ namespace AvaloniaApplication2.ViewModels
             _panther = new Panther(15, 75);
             _turtle = new Turtle(5, 15);
 
-            // Подписка на события
-            _dog.SoundGiven += (s, e) => OutputText += "Собака лает: Гав-гав!\n";
-            _panther.SoundGiven += (s, e) => OutputText += "Пантера рычит: Рррр!\n";
-            _panther.TreeClimbed += (s, e) => OutputText += "Пантера залезла на дерево\n";
-            _panther.GetDownFromTree += (s, e) => OutputText += "Пантера слезла с дерева\n";
+            _dog.SoundGiven += (sender, args) => Logs.Add("Dog barked!");
+            _panther.SoundGiven += (sender, args) => Logs.Add("Panther roared!");
+            _panther.TreeClimbed += (sender, args) => Logs.Add("Panther climbed the tree!");
+            _panther.GetDownFromTree += (sender, args) => Logs.Add("Panther got down from the tree!");
 
-            // Инициализация команд для собаки
-            MoveDogCommand = ReactiveCommand.Create(() => 
-            {
-                _dog.Move();
-                OutputText += $"Собака двигается. Скорость: {_dog.Speed}\n";
-            });
-
-            StandDogCommand = ReactiveCommand.Create(() => 
-            {
-                _dog.Stand();
-                OutputText += $"Собака останавливается. Скорость: {_dog.Speed}\n";
-            });
-
-            DogSoundCommand = ReactiveCommand.Create(() => _dog.MakeSound());
-
-            // Инициализация команд для пантеры
-            MovePantherCommand = ReactiveCommand.Create(() => 
-            {
-                _panther.Move();
-                OutputText += $"Пантера двигается. Скорость: {_panther.Speed}\n";
-            });
-
-            StandPantherCommand = ReactiveCommand.Create(() => 
-            {
-                _panther.Stand();
-                OutputText += $"Пантера останавливается. Скорость: {_panther.Speed}\n";
-            });
-
-            PantherSoundCommand = ReactiveCommand.Create(() => _panther.MakeSound());
-            ClimbTreeCommand = ReactiveCommand.Create(() => _panther.ClimbTree());
-            GetDownTreeCommand = ReactiveCommand.Create(() => _panther.GetDown());
-
-            // Инициализация команд для черепахи
-            MoveTurtleCommand = ReactiveCommand.Create(() => 
-            {
-                _turtle.Move();
-                OutputText += $"Черепаха двигается. Скорость: {_turtle.Speed}\n";
-            });
-
-            StandTurtleCommand = ReactiveCommand.Create(() => 
-            {
-                _turtle.Stand();
-                OutputText += $"Черепаха останавливается. Скорость: {_turtle.Speed}\n";
-            });
+            DogSpeed = _dog.Speed;
+            PantherSpeed = _panther.Speed;
+            TurtleSpeed = _turtle.Speed;
         }
-        
-        // Команды для собаки
-        public ICommand MoveDogCommand { get; }
-        public ICommand StandDogCommand { get; }
-        public ICommand DogSoundCommand { get; }
-        
-        // Команды для пантеры
-        public ICommand MovePantherCommand { get; }
-        public ICommand StandPantherCommand { get; }
-        public ICommand PantherSoundCommand { get; }
-        public ICommand ClimbTreeCommand { get; }
-        public ICommand GetDownTreeCommand { get; }
-        
-        // Команды для черепахи
-        public ICommand MoveTurtleCommand { get; }
-        public ICommand StandTurtleCommand { get; }
+
+        [RelayCommand]
+        private void DogMove()
+        {
+            _dog.Move();
+            DogSpeed = _dog.Speed;
+        }
+
+        [RelayCommand]
+        private void DogStand()
+        {
+            _dog.Stand();
+            DogSpeed = _dog.Speed;
+        }
+
+        [RelayCommand]
+        private void DogMakeSound()
+        {
+            _dog.MakeSound();
+        }
+
+        [RelayCommand]
+        private void PantherMove()
+        {
+            _panther.Move();
+            PantherSpeed = _panther.Speed;
+        }
+
+        [RelayCommand]
+        private void PantherStand()
+        {
+            _panther.Stand();
+            PantherSpeed = _panther.Speed;
+        }
+
+        [RelayCommand]
+        private void PantherMakeSound()
+        {
+            _panther.MakeSound();
+        }
+
+        [RelayCommand]
+        private void PantherClimbTree()
+        {
+            _panther.ClimbTree();
+            PantherSpeed = _panther.Speed;
+        }
+
+        [RelayCommand]
+        private void PantherGetDown()
+        {
+            _panther.GetDown();
+        }
+
+        [RelayCommand]
+        private void TurtleMove()
+        {
+            _turtle.Move();
+            TurtleSpeed = _turtle.Speed;
+        }
+
+        [RelayCommand]
+        private void TurtleStand()
+        {
+            _turtle.Stand();
+            TurtleSpeed = _turtle.Speed;
+        }
     }
 }
